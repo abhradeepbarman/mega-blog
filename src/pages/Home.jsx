@@ -5,6 +5,7 @@ import {Container, PostCard} from "../components/index"
 function Home() {
     const [posts, setPosts] = useState([])
 
+    // fetch all the posts on the platform
     useEffect(() => {
         appwriteService.getAllPosts([])
             .then((posts) => {
@@ -17,12 +18,13 @@ function Home() {
 
   if(posts.length === 0) {
     return (
-        <div className="w-full py-8 mt-4 text-center">
+        <div className="w-full py-8 mt-4 text-center flex justify-center items-center h-full">
             <Container>
                 <div className="flex flex-wrap">
                     <div className="p-2 w-full">
                         <h1 className="text-2xl font-bold hover:text-gray-500">
-                            Login to read posts
+                            Login to read posts  
+                            {/* TODO: check if this text remains same even after login */}
                         </h1>
                     </div>
                 </div>
