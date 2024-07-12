@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useState } from "react"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import authService from "./appwrite/auth"
 import { login, logout } from "./store/authSlice"
 import { Footer, Header } from "./components"
@@ -11,6 +11,9 @@ import Login from "./pages/Login"
 import Signup from './pages/Signup';
 import AddPost from "./pages/AddPost"
 import { Toaster } from 'react-hot-toast';
+import AuthLayout from "./components/AuthLayout"
+import AllPosts from "./pages/AllPosts"
+import Post from "./pages/Post"
 
 const App = () => {
   const [loading, setLoading] = useState(true)
@@ -47,10 +50,48 @@ const App = () => {
         
         <main className="flex-1">
             <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/add-post" element={<AddPost />} />
+                <Route 
+                  path="/" 
+                  element={<Home />} 
+                />
+                
+                <Route 
+                  path="/login" 
+                  element={ 
+                  <AuthLayout authentication={false} > 
+                    <Login /> 
+                  </AuthLayout>  } 
+                />
+
+                <Route path="/signup" element={ 
+                  <AuthLayout authentication={false} >
+                    <Signup />
+                  </AuthLayout>} 
+                />    
+
+                <Route path="/add-post" element={
+                  <AuthLayout >
+                    <AddPost />
+                  </AuthLayout>
+                } />
+
+                <Route  
+                  path="/all-posts"
+                  element={
+                    <AuthLayout>
+                      <AllPosts />
+                    </AuthLayout>
+                  }
+                />
+
+                <Route  
+                  path="/post/:slug"
+                  element={
+                    <AuthLayout>
+                      <Post />
+                    </AuthLayout>
+                  }
+                />
             </Routes>
         </main>
         

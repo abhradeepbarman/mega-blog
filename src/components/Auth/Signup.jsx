@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import authService from "../../appwrite/auth";
-import { login as storeLogin } from "../../store/authSlice";
+import { login } from "../../store/authSlice";
 import Logo from "../Common/Logo";
 import {Link} from "react-router-dom"
 import Input from "../Input";
@@ -29,12 +29,12 @@ function Signup() {
         const user = await authService.getCurrentUser();
 
         if (user) {
-          dispatch(storeLogin(user));
+          dispatch(login(user));
           navigate("/");
         }
       }
       else {
-        toast.error("try again!")
+        toast.error("Try again!")
       }
     } 
     catch (error) {

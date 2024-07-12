@@ -1,13 +1,13 @@
 import { PostCard } from "../components/index"
 import appwriteService from "../appwrite/config"
 import { useEffect, useState } from "react"
-import { Container } from "postcss"
+import Container from "../components/Container/Container"
 
 function AllPosts() {
     const [posts, setPosts] = useState([])
 
     useEffect(() => {
-        appwriteService.getAllPosts([])
+        appwriteService.getAllPosts()
             .then((posts) => {
                 if(posts) {
                     setPosts(posts.documents)

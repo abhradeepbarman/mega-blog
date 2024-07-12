@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import authService from "../../appwrite/auth";
-import { login as storeLogin } from "../../store/authSlice";
+import { login } from "../../store/authSlice";
 import Logo from "../Common/Logo";
 import Input from "../Input";
 import Button from "../Button";
@@ -23,13 +23,12 @@ const Login = () => {
 
     try {
       const session = await authService.login(data);
-      console.log(session);
 
       if (session) {
         const userData = await authService.getCurrentUser();
 
         if (userData) {
-          dispatch(storeLogin(userData));
+          dispatch(login(userData));
           navigate("/");
         }
       }

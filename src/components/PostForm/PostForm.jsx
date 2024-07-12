@@ -7,6 +7,7 @@ import { useCallback, useEffect } from "react";
 import Select from "../Select";
 import Input from '../Input';
 import Button from './../Button';
+import toast from "react-hot-toast";
 
 function PostForm({ post }) {
   // console.log("post", post);
@@ -25,41 +26,61 @@ function PostForm({ post }) {
   const { userData } = useSelector((state) => state.auth);
 
   const submit = async (data) => {
-    if (post) {
-      //update
-      const file = (await data.image[0])
-        ? appwriteService.fileUpload(data?.image[0])
-        : null;
+    const toastId = toast.loading("Post uploading...")
 
-      if (file) {
-        await appwriteService.deleteFile(post.featuredImage);
+    try {
+      if(!post) {
+        //create new post
+        const file = await appwriteService.fileUpload(data.image[0]);
+  
+        if (file) {
+          const fileId = file.$id;
+          data.featuredImage = fileId;
+          
+          const dbPost = await appwriteService.createPost({
+            ...data,
+            status: data.status == "0" ? "active" : "inactive",
+            userId: userData.$id,
+          });
+  
+          if (dbPost) {
+            toast.success("Blog uploaded Successfully!")
+            navigate(`/post/${dbPost.$id}`);
+          }
+          else {
+            toast.error("Error while uploading Blog")
+          }
+        }
+        else {
+          toast.error("Error while uploading Image")
+        }
       }
-
-      const dbPost = await appwriteService.updatePost(post.$id, {
-        ...data,
-        featuredImage: file ? file.$id : null,
-      });
-
-      if (dbPost) {
-        navigate(`/post/${dbPost.$id}`);
-      }
-    } else {
-      //create new post
-      const file = await appwriteService.uploadFile(data.image[0]);
-
-      if (file) {
-        const fileId = file.$id;
-        data.featuredImage = fileId;
-        const dbPost = await appwriteService.createPost({
+      else {
+        //TODO: update post
+        const file = data.image[0] ? await appwriteService.fileUpload(data?.image[0]) : null;
+  
+        if (file) {
+          await appwriteService.deleteFile(post.featuredImage);
+        }
+  
+        const dbPost = await appwriteService.updatePost(post.$id, {
           ...data,
-          userId: userData.$id,
+          status: data.status == "0" ? "active" : "inactive",
+          featuredImage: file ? file.$id : null,
         });
-
+  
         if (dbPost) {
           navigate(`/post/${dbPost.$id}`);
         }
-      }
-    }
+      } 
+    } 
+    catch (error) {
+      console.log(error);
+      toast.error("Error!")
+    } 
+    finally {
+      toast.dismiss(toastId)
+    } 
   };
 
   const slugTransform = useCallback((value) => {
@@ -132,23 +153,29 @@ function PostForm({ post }) {
           accept="image/png, image/jpg, image/jpeg, image/gif"
           {...register("image", { required: !post })}
         />
-        {post && (
-          <div className="w-full mb-4">
-            <img
-              src={appwriteService.getFilePreview(post.featuredImage)}
-              alt={post.title}
-              className="rounded-lg"
-            />
-          </div>
-        )}
+
+        {/* if user came for edit, show him the image preview  */}
+        {
+          post && (
+            <div className="w-full mb-4">
+              <img
+                src={appwriteService.getFilePreview(post.featuredImage)}
+                alt={post.title}
+                className="rounded-lg"
+              />
+            </div>
+          )
+        }
+
+        {/* Publish status  */}
         <Select
-          options={["Active", "Inactive"]}
+          options={["active", "inactive"]}
           label="Status"
           className="mb-4"
           {...register("status", { required: true })}
         />
         
-        
+        {/* submit button  */}
         <Button
           type="submit"
           bgColor={post ? "bg-green-500" : undefined}
