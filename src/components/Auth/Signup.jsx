@@ -2,35 +2,50 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import authService from "../appwrite/auth";
-import { login } from "../store/authSlice";
-import Logo from "./Logo";
+import authService from "../../appwrite/auth";
+import { login as storeLogin } from "../../store/authSlice";
+import Logo from "../Common/Logo";
 import {Link} from "react-router-dom"
-import Input from "./Input";
-import Button from "./Button";
+import Input from "../Input";
+import Button from "../Button";
+import Loader from "../Common/Loader";
 
 function Signup() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false)
+
   const { register, handleSubmit } = useForm();
 
   const onSubmit = async (data) => {
     setError("");
+    setLoading(true)
+
     try {
       const userData = await authService.createAccount(data);
 
       if (userData) {
         const user = await authService.getCurrentUser();
+
         if (user) {
-          dispatch(login(user));
+          dispatch(storeLogin(user));
+          setLoading(false)
           navigate("/");
         }
       }
     } catch (error) {
+      setLoading(false)
       setError(error.message);
     }
   };
+
+  if(loading) {
+    return (
+        <Loader />
+    )
+  }
 
   return (
     <div className="flex items-center justify-center">
@@ -50,14 +65,21 @@ function Signup() {
                 to="/login"
                 className="font-medium text-primary transition-all duration-200 hover:underline"
             >
-                Sign In
+                Login
             </Link>
         </p>
 
         {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
             <div className='space-y-5'>
+                {/* <Input 
+                    label="Full Name: "
+                    type="text"
+                    placeholder="Enter your Full Name"
+                    {...register("name", {required: true})}
+                /> */}
+
                 <Input 
                     label="Email: "
                     placeholder="Enter your email"

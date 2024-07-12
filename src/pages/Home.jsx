@@ -24,7 +24,6 @@ function Home() {
                     <div className="p-2 w-full">
                         <h1 className="text-2xl font-bold hover:text-gray-500">
                             Login to read posts  
-                            {/* TODO: check if this text remains same even after login */}
                         </h1>
                     </div>
                 </div>

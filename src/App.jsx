@@ -6,7 +6,9 @@ import { login, logout } from "./store/authSlice"
 import { Footer, Header } from "./components"
 import { Route, Routes } from "react-router-dom"
 import Home from "./pages/Home";
-import Loader from "./components/Loader"
+import Loader from "./components/Common/Loader"
+import Login from "./pages/Login"
+import Signup from './pages/Signup';
 
 const App = () => {
   const [loading, setLoading] = useState(true)
@@ -16,9 +18,8 @@ const App = () => {
   useEffect(() => {
     authService.getCurrentUser()
       .then((userData) => {
-        // console.log(userData);
         if(userData) {
-          dispatch(login({userData}))
+          dispatch(login(userData))
         }
         else {
           dispatch(logout())
@@ -31,7 +32,7 @@ const App = () => {
   if(loading) {
     return (
       <div className="bg-gray-400">
-        <Loader />
+          <Loader className="min-h-screen" />
       </div>
     )
   }
@@ -45,6 +46,8 @@ const App = () => {
         <main className="flex-1">
             <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
             </Routes>
         </main>
         

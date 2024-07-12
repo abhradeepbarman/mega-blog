@@ -2,28 +2,32 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import authService from "./../appwrite/auth";
-import { login as storeLogin } from "../store/authSlice";
-import Logo from "./Logo";
-import Input from "./Input";
-import Button from "./Button";
+import authService from "../../appwrite/auth";
+import { login as storeLogin } from "../../store/authSlice";
+import Logo from "../Common/Logo";
+import Input from "../Input";
+import Button from "../Button";
+import Loader from "../Common/Loader";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { register, handleSubmit } = useForm();
-
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { register, handleSubmit } = useForm();
 
   const onSubmit = async (data) => {
     setError("");
+    setLoading(true)
 
     try {
       const session = await authService.login(data.email, data.password);
 
       if (session) {
         const userData = await authService.getCurrentUser();
+
         if (userData) {
           dispatch(storeLogin(userData));
           navigate("/");
@@ -32,7 +36,14 @@ const Login = () => {
     } catch (error) {
       setError(error.message);
     }
+    finally {
+      setLoading(false)
+    }
   };
+
+  if(loading) {
+    return <Loader />
+  }
 
   return (
     <div className="flex items-center justify-center w-full">
@@ -46,7 +57,7 @@ const Login = () => {
         </div>
 
         <h2 className="text-center text-2xl font-bold leading-tight">
-          Sign in to your account
+          Login to your account
         </h2>
 
         <p className="mt-2 text-center text-base text-black/60">
@@ -61,7 +72,7 @@ const Login = () => {
 
         {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
           <div className="space-y-5">
             <Input
               label="Email: "
