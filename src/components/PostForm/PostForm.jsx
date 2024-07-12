@@ -9,6 +9,8 @@ import Input from '../Input';
 import Button from './../Button';
 
 function PostForm({ post }) {
+  // console.log("post", post);
+
   const { register, handleSubmit, watch, setValue, control, getValues } =
     useForm({
       defaultValues: {
@@ -63,10 +65,10 @@ function PostForm({ post }) {
   const slugTransform = useCallback((value) => {
     if (value && typeof value === "string") {
       return value
-        .trim()
-        .toLowerCase()
-        .replace(/^[a-zA-Z\d\s]+/g, "-")
-        .replace(/\s/g, "-");
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-zA-Z\d\s]/g, "") // Remove all non-alphanumeric characters except spaces
+      .replace(/\s+/g, "-"); // Replace spaces with hyphens
     }
 
     return "";
@@ -90,32 +92,39 @@ function PostForm({ post }) {
     <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
       
       <div className="w-2/3 px-2">
+        
+        {/* Title  */}
         <Input
           label="Title :"
           placeholder="Title"
           className="mb-4"
           {...register("title", { required: true })}
+          onChange={(e) => {
+            setValue("slug", slugTransform(e.target.value));
+          }}
         />
+
+        {/* Slug  */}
         <Input
           label="Slug :"
           placeholder="Slug"
           className="mb-4"
           {...register("slug", { required: true })}
-          onInput={(e) => {
-            setValue("slug", slugTransform(e.currentTarget.value), {
-              shouldValidate: true,
-            });
-          }}
         />
+
+        {/* Text Editor  */}
         <RTE
           label="Content :"
           name="content"
           control={control}
           defaultValue={getValues("content")}
         />
+
       </div>
 
       <div className="w-1/3 px-2">
+
+        {/* Image upload section  */}
         <Input
           label="Featured Image :"
           type="file"
@@ -133,7 +142,7 @@ function PostForm({ post }) {
           </div>
         )}
         <Select
-          options={["active", "inactive"]}
+          options={["Active", "Inactive"]}
           label="Status"
           className="mb-4"
           {...register("status", { required: true })}

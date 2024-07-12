@@ -9,6 +9,8 @@ import Home from "./pages/Home";
 import Loader from "./components/Common/Loader"
 import Login from "./pages/Login"
 import Signup from './pages/Signup';
+import AddPost from "./pages/AddPost"
+import { Toaster } from 'react-hot-toast';
 
 const App = () => {
   const [loading, setLoading] = useState(true)
@@ -48,12 +50,14 @@ const App = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/add-post" element={<AddPost />} />
             </Routes>
         </main>
         
         <Footer />
       </div>
 
+      <Toaster />
     </div>
   )
 }

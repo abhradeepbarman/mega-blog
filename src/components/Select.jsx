@@ -14,7 +14,7 @@ const Select = ({ options, label, className="", ...props }, ref) => {
         >
             {
                 options?.map((option, index) => (
-                    <option key={index} value={index}>
+                    <option key={index} value={index} className='py-11'>
                         {option}
                     </option>
                 ))

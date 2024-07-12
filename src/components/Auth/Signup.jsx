@@ -8,20 +8,19 @@ import Logo from "../Common/Logo";
 import {Link} from "react-router-dom"
 import Input from "../Input";
 import Button from "../Button";
-import Loader from "../Common/Loader";
+import toast from "react-hot-toast";
 
 function Signup() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false)
 
   const { register, handleSubmit } = useForm();
 
   const onSubmit = async (data) => {
     setError("");
-    setLoading(true)
+    const toastId = toast.loading("Loading...")
 
     try {
       const userData = await authService.createAccount(data);
@@ -31,21 +30,21 @@ function Signup() {
 
         if (user) {
           dispatch(storeLogin(user));
-          setLoading(false)
           navigate("/");
         }
       }
-    } catch (error) {
-      setLoading(false)
+      else {
+        toast.error("try again!")
+      }
+    } 
+    catch (error) {
+      toast.error("Error")
       setError(error.message);
     }
+    finally {
+      toast.dismiss(toastId)
+    }
   };
-
-  if(loading) {
-    return (
-        <Loader />
-    )
-  }
 
   return (
     <div className="flex items-center justify-center">

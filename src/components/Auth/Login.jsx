@@ -7,23 +7,23 @@ import { login as storeLogin } from "../../store/authSlice";
 import Logo from "../Common/Logo";
 import Input from "../Input";
 import Button from "../Button";
-import Loader from "../Common/Loader";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const { register, handleSubmit } = useForm();
 
   const onSubmit = async (data) => {
     setError("");
-    setLoading(true)
+    const toastId = toast.loading("Loading...")
 
     try {
-      const session = await authService.login(data.email, data.password);
+      const session = await authService.login(data);
+      console.log(session);
 
       if (session) {
         const userData = await authService.getCurrentUser();
@@ -33,17 +33,18 @@ const Login = () => {
           navigate("/");
         }
       }
+      else {
+        toast.error("Invalid Credentials")
+      }
     } catch (error) {
+      toast.error("Error!")
       setError(error.message);
     }
     finally {
-      setLoading(false)
+      toast.dismiss(toastId)
     }
   };
 
-  if(loading) {
-    return <Loader />
-  }
 
   return (
     <div className="flex items-center justify-center w-full">
