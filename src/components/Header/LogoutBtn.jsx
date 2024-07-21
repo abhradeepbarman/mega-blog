@@ -1,16 +1,22 @@
 import { useDispatch } from "react-redux"
 import { logout } from "../../store/authSlice"
 import authService from './../../appwrite/auth';
+import toast from "react-hot-toast";
 
 const LogoutBtn = () => {
     const dispatch = useDispatch()
 
     const logoutHandler = () => {
+        const toastId = toast.loading("Logging out...")
         authService.logout()
         .then(() => {
             dispatch(logout())
         })
-        .catch((err) => console.log(err))
+        .catch((err) => {
+          console.log(err);
+          toast.error("Error while logging out!")
+        })
+        .finally(() => toast.dismiss(toastId))
     }
 
   return (

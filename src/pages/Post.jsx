@@ -5,6 +5,7 @@ import Button from "../components/Button";
 import Container from "../components/Container/Container";
 import parse from "html-react-parser";
 import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 export default function Post() {
     const [post, setPost] = useState(null);
@@ -17,20 +18,43 @@ export default function Post() {
 
     useEffect(() => {
         if (slug) {
-            appwriteService.getPost(slug).then((post) => {
-                if (post) setPost(post);
-                else navigate("/");
-            });
-        } else navigate("/");
+            const toastId = toast.loading("Loading...")
+            console.log("hello", slug);
+            appwriteService.getPost(slug)
+            .then((post) => {
+                console.log("post", post);
+                if (post){
+                    setPost(post);
+                }    
+                else{
+                    navigate("/");
+                } 
+            })
+            .catch((err) => {
+                toast.error("Error while fetching post!")
+                console.log(err);
+            })
+            .finally(() => toast.dismiss(toastId))
+        } 
+        else {
+            navigate("/")
+        }
     }, [slug, navigate]);
 
     const deletePost = () => {
-        appwriteService.deletePost(post.$id).then((status) => {
+        const toastId = toast.loading("Deleting...")
+        appwriteService.deletePost(post.$id)
+        .then((status) => {
             if (status) {
                 appwriteService.deleteFile(post.featuredImage);
                 navigate("/");
             }
-        });
+        })
+        .catch((err) =>{ 
+            toast.error("Error while deleting!")
+            console.log(err);
+        })
+        .finally(() => toast.dismiss(toastId))
     };
 
 
