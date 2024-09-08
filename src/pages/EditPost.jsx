@@ -22,7 +22,7 @@ function EditPost() {
         else {
             navigate("/")
         }
-    }, [])
+    }, [slug, navigate])
 
   return (
     post ? (
