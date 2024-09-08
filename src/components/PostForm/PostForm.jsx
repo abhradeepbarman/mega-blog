@@ -3,20 +3,32 @@ import RTE from "../RTE";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import appwriteService from "../../appwrite/config";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Select from "../Select";
 import Input from '../Input';
 import Button from './../Button';
 import toast from "react-hot-toast";
 
 function PostForm({ post }) {
-  // console.log("post", post);
+  console.log(post);
+  
+  const slugTransform = useCallback((value) => {
+    if (value && typeof value === "string") {
+      return value
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-zA-Z\d\s]/g, "") // Remove all non-alphanumeric characters except spaces
+      .replace(/\s+/g, "-"); // Replace spaces with hyphens
+    }
+
+    return "";
+  }, []);
 
   const { register, handleSubmit, watch, setValue, control, getValues } =
     useForm({
       defaultValues: {
         title: post?.title || "",
-        slug: post?.title || "",
+        slug: slugTransform(post?.title) || "",
         content: post?.content || "",
         status: post?.status || "active",
       },
@@ -24,9 +36,11 @@ function PostForm({ post }) {
 
   const navigate = useNavigate();
   const { userData } = useSelector((state) => state.auth);
+  const [loading, setLoading] = useState(false);
 
   const submit = async (data) => {
     const toastId = toast.loading("Post uploading...")
+    setLoading(true)
 
     try {
       if(!post) {
@@ -80,20 +94,9 @@ function PostForm({ post }) {
     } 
     finally {
       toast.dismiss(toastId)
+      setLoading(false)
     } 
   };
-
-  const slugTransform = useCallback((value) => {
-    if (value && typeof value === "string") {
-      return value
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-zA-Z\d\s]/g, "") // Remove all non-alphanumeric characters except spaces
-      .replace(/\s+/g, "-"); // Replace spaces with hyphens
-    }
-
-    return "";
-  }, []);
 
   useEffect(() => {
     const subscription = watch((value, { name }) => {
@@ -116,7 +119,7 @@ function PostForm({ post }) {
         
         {/* Title  */}
         <Input
-          label="Title :"
+          label="Title* :"
           placeholder="Title"
           className="mb-4"
           {...register("title", { required: true })}
@@ -127,7 +130,7 @@ function PostForm({ post }) {
 
         {/* Slug  */}
         <Input
-          label="Slug :"
+          label="Slug* :"
           placeholder="Slug"
           className="mb-4"
           {...register("slug", { required: true })}
@@ -135,7 +138,7 @@ function PostForm({ post }) {
 
         {/* Text Editor  */}
         <RTE
-          label="Content :"
+          label="Content (255 characters) :"
           name="content"
           control={control}
           defaultValue={getValues("content")}
@@ -147,7 +150,7 @@ function PostForm({ post }) {
 
         {/* Image upload section  */}
         <Input
-          label="Featured Image :"
+          label="Featured Image* :"
           type="file"
           className="mb-4"
           accept="image/png, image/jpg, image/jpeg, image/gif"
@@ -172,6 +175,7 @@ function PostForm({ post }) {
           options={["active", "inactive"]}
           label="Status"
           className="mb-4"
+          value={getValues("status")} 
           {...register("status", { required: true })}
         />
         
@@ -180,6 +184,7 @@ function PostForm({ post }) {
           type="submit"
           bgColor={post ? "bg-green-500" : undefined}
           className="w-full"
+          disabled={loading}
         >
           {post ? "Update" : "Submit"}
         </Button>

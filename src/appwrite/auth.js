@@ -13,12 +13,13 @@ class AuthService {
         this.account = new Account(this.client)
     }
 
-    async createAccount({email, password}) {
+    async createAccount({email, password, name}) {
         try {
             const user = await this.account.create(
                 ID.unique(),
                 email, 
-                password
+                password,
+                name
             )
 
             if(user) {

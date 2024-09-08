@@ -12,14 +12,12 @@ import toast from "react-hot-toast";
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const [error, setError] = useState("");
-
+  const [loading, setLoading] = useState(false)
   const { register, handleSubmit } = useForm();
 
   const onSubmit = async (data) => {
-    setError("");
     const toastId = toast.loading("Loading...")
+    setLoading(true)
 
     try {
       const session = await authService.login(data);
@@ -37,10 +35,10 @@ const Login = () => {
       }
     } catch (error) {
       toast.error("Error!")
-      setError(error.message);
     }
     finally {
       toast.dismiss(toastId)
+      setLoading(false)
     }
   };
 
@@ -70,7 +68,6 @@ const Login = () => {
           </Link>
         </p>
 
-        {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
           <div className="space-y-5">
@@ -98,6 +95,7 @@ const Login = () => {
             <Button
                 type="submit"
                 className="w-full"
+                disabled={loading}
             >
                 Sign in
             </Button>

@@ -4,6 +4,7 @@ const Input = forwardRef( function Input({
     label,
     type="text",
     className="",
+    errors,
     ...props
 }, ref) {
 
@@ -25,6 +26,12 @@ const Input = forwardRef( function Input({
                 {...props}
                 id={id}
             />
+
+            {
+                errors && (
+                    <p className='text-sm text-red-500'>{errors}</p>
+                )
+            }
         </div>
     )
 } )

@@ -13,16 +13,14 @@ import toast from "react-hot-toast";
 function Signup() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const [error, setError] = useState("");
-
-  const { register, handleSubmit } = useForm();
+  const [loading, setLoading] = useState(false)
+  const { register, handleSubmit} = useForm();
 
   const onSubmit = async (data) => {
-    setError("");
     const toastId = toast.loading("Loading...")
+    setLoading(true)
 
-    try {
+    try { 
       const userData = await authService.createAccount(data);
 
       if (userData) {
@@ -39,12 +37,13 @@ function Signup() {
     } 
     catch (error) {
       toast.error("Error")
-      setError(error.message);
     }
     finally {
       toast.dismiss(toastId)
+      setLoading(false)
     }
-  };
+  };  
+  
 
   return (
     <div className="flex items-center justify-center">
@@ -68,16 +67,15 @@ function Signup() {
             </Link>
         </p>
 
-        {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
             <div className='space-y-5'>
-                {/* <Input 
+                <Input 
                     label="Full Name: "
                     type="text"
                     placeholder="Enter your Full Name"
                     {...register("name", {required: true})}
-                /> */}
+                />
 
                 <Input 
                     label="Email: "
@@ -99,7 +97,7 @@ function Signup() {
                     {...register("password", {required: true})}
                 />
 
-                <Button type="submit" className="w-full">
+                <Button type="submit" className={`w-full`}  disabled={loading}>
                     Create Account
                 </Button>
             </div>

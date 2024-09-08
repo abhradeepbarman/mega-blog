@@ -19,10 +19,8 @@ export default function Post() {
     useEffect(() => {
         if (slug) {
             const toastId = toast.loading("Loading...")
-            console.log("hello", slug);
             appwriteService.getPost(slug)
             .then((post) => {
-                console.log("post", post);
                 if (post){
                     setPost(post);
                 }    
@@ -54,7 +52,10 @@ export default function Post() {
             toast.error("Error while deleting!")
             console.log(err);
         })
-        .finally(() => toast.dismiss(toastId))
+        .finally(() => {
+            toast.dismiss(toastId)
+            toast.success("Post deleted successfully!")
+        })
     };
 
 

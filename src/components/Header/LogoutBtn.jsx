@@ -16,7 +16,10 @@ const LogoutBtn = () => {
           console.log(err);
           toast.error("Error while logging out!")
         })
-        .finally(() => toast.dismiss(toastId))
+        .finally(() => {
+          toast.dismiss(toastId)
+          location.reload()
+        })
     }
 
   return (
