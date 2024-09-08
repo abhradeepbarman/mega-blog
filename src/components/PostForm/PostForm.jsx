@@ -10,7 +10,6 @@ import Button from './../Button';
 import toast from "react-hot-toast";
 
 function PostForm({ post }) {
-  console.log(post);
   
   const slugTransform = useCallback((value) => {
     if (value && typeof value === "string") {
@@ -80,7 +79,7 @@ function PostForm({ post }) {
         const dbPost = await appwriteService.updatePost(post.$id, {
           ...data,
           status: data.status == "0" ? "active" : "inactive",
-          featuredImage: file ? file.$id : null,
+          featuredImage: file ? file.$id : post.featuredImage,
         });
   
         if (dbPost) {

@@ -12,6 +12,7 @@ function EditPost() {
         if(slug) {
             appwriteService.getPost(slug)
                 .then((post) => {
+                    console.log(post)
                     if(post) {
                         setPost(post)
                     }
