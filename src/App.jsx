@@ -55,7 +55,12 @@ const App = () => {
                             }
                         />
 
-                        <Route path="/" element={<Home />} />
+                        <Route path="/" element={
+                            <AuthLayout>
+                                <Home />
+                            </AuthLayout>
+                        } 
+                        />
 
                         <Route
                             path="/add-post"
